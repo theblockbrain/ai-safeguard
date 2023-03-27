@@ -1,0 +1,5 @@
+pip install git+https://github.com/ethereum/web3.py.git
+
+pip uninstall requests
+
+pip install requests==2.21.0

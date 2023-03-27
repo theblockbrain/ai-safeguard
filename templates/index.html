@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Contract Parser</title>
+      <style>
+         body {
+         font-family: Arial, sans-serif;
+         background-color: #f0f0f0;
+         padding: 20px;
+         }
+         h1 {
+         font-size: 36px;
+         text-align: center;
+         margin-bottom: 30px;
+         }
+         form {
+         background-color: #fff;
+         border: 1px solid #ccc;
+         padding: 20px;
+         border-radius: 5px;
+         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+         max-width: 600px;
+         margin: 0 auto;
+         }
+         label {
+         display: inline-flex;
+         align-items: center;
+         margin-bottom: 10px;
+         }
+         input[type="text"] {
+         width: 100%;
+         padding: 10px;
+         border: 1px solid #ccc;
+         border-radius: 5px;
+         margin-bottom: 20px;
+         }
+         label > input[type="checkbox"] {
+         margin-right: 10px;
+         }
+         input[type="submit"] {
+         display: block;
+         margin: 0 auto;
+         width: 100%;
+         background-color: #4CAF50;
+         color: #fff;
+         border: none;
+         border-radius: 5px;
+         padding: 10px 20px;
+         cursor: pointer;
+         }
+         input[type="submit"]:hover {
+         background-color: #3e8e41;
+         }
+         hr {
+         margin-top: 50px;
+         margin-bottom: 50px;
+         border: 0;
+         border-top: 1px solid #ccc;
+         }
+         #bytecode-div,
+         #cfg-div,
+         #disasm-div,
+         #sigs-div,
+         #audit-div {
+         background-color: #fff;
+         border: 1px solid #ccc;
+         padding: 20px;
+         border-radius: 5px;
+         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+         margin-bottom: 20px;
+         }
+         textarea {
+         width: 100%;
+         padding: 10px;
+         border: 1px solid #ccc;
+         border-radius: 5px;
+         margin-bottom: 20px;
+         }
+      </style>
+   </head>
+   <body>
+      <h1>NB-EVM Parser</h1>
+      <form method="POST" action="/parse">
+         <label for="contract_address">Contract Address:</label>
+         <input type="text" name="contract_address" id="contract_address" required>
+         <br>
+         <label for="rpc_url">RPC URL:</label>
+         <input type="text" name="rpc_url" id="rpc_url">
+         <br>
+         <input type="checkbox" id="bytecode" name="bytecode">
+         <label for="bytecode">Scrape bytecode</label>
+         <br>
+         <input type="checkbox" id="cfg" name="cfg">
+         <label for="cfg">Generate control flow graph</label>
+         <br>
+         <input type="checkbox" id="disasm" name="disasm">
+         <label for="disasm">Generate disassembly</label>
+         <br>
+         <input type="checkbox" id="sigs" name="sigs">
+         <label for="sigs">Extract function signatures</label>
+         <br>
+         <input type="checkbox" id="audit" name="audit">
+         <label for="audit">Audit contract</label>
+         <br>
+         <input type="submit" value="Submit"> 
+      </form>
+      <hr>
+      {% if output %}
+      {% if output.get('bytecode') %}
+      <div id="bytecode-div">
+         Bytecode:
+         <br>
+         <textarea rows="10" cols="80">{{ output['bytecode'] }}</textarea>
+      </div>
+      {% endif %}
+      {% if output.get('cfg') %}
+      <div id="cfg-div">
+         Control Flow Graph:
+         <br>
+         <textarea rows="10" cols="80">{{ output['cfg'].replace('\\n', '\n') }}</textarea>
+      </div>
+      {% endif %}
+      {% if output.get('disasm') %}
+      <div id="disasm-div">
+         Disassembly:
+         <br>
+         <textarea rows="10" cols="80">{{ output['disasm'].replace('\\n', '\n') }}</textarea>
+      </div>
+      {% endif %}
+      {% if output.get('sigs') %}
+      <div id="sigs-div">
+         Signatures:
+         <br>
+         <textarea rows="10" cols="80">{{ output['sigs'].replace('\\n', '\n') }}</textarea>
+      </div>
+      {% endif %}
+      {% if output.get('audit') %}
+      <div id="audit-div">
+         Contract address: {{ contract_address }}
+         <br>
+         {{ output['audit'] | safe }}
+      </div>
+      {% endif %}
+      {% endif %}
+   </body>
+</html>

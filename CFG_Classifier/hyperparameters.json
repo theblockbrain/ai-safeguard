@@ -1,0 +1,12 @@
+{
+  "hidden_layers_width": 64,
+  "malicious_bias": 3,
+  "learning_rate": 0.1,
+  "max_epochs": 150,
+  "graph2vec": {
+    "dimensions": 64,
+    "min_count": 4,
+    "epochs": 15,
+    "wl_iterations": 4
+  }
+}
