@@ -1,8 +1,9 @@
 import os
 import sys, pyevmasm
-from CFG_Builder.evm_parser import evm_cfg
 from web3 import Web3
-from CFG_Builder.CFG_utils import visualization
+from utils.generate_cfg import generate_control_flow_graph
+from evm_parser import evm_cfg
+from utils import visualization
 from utils.infer_models import audit_contract
 from utils.scrape_bytecode import scrape_bytecode
 from utils.signatures_evm import get_signatures
@@ -119,15 +120,7 @@ def parse_arguments():
             logger.error("Bytecode file does not exist.")
             logger.error("Use the --bytecode flag to scrape bytecode first.")
             exit(1)
-        with open(contract_dir+contract_address+".bin", mode="r") as file:
-            evm_bytecode = file.read()
-        # Generate a control flow graph
-        blocks = evm_cfg.create_basic_blocks(evm_bytecode)
-        graph = visualization.generate_graph(blocks)
-        # Save the graph to the specified .dot file
-        with open(contract_dir+contract_address+".dot", mode="w") as file:
-            graph.dot(file)
-        logger.info("Control flow graph saved.")
+        generate_control_flow_graph(contract_dir+contract_address+".bin",contract_dir+contract_address+".dot")
 
     # check if the user wants to generate a disassembly
     if "--disasm" in sys.argv:

@@ -1,8 +1,8 @@
 import os
 import pyevmasm
-from CFG_Builder.evm_parser import evm_cfg
+from evm_parser import evm_cfg
 from web3 import Web3
-from CFG_Builder.CFG_utils import visualization
+from utils import generate_cfg, visualization
 from utils.infer_models import audit_contract
 from utils.scrape_bytecode import scrape_bytecode
 from utils.signatures_evm import get_signatures
@@ -50,14 +50,8 @@ def parse():
         # check if the bytecode file exists
         if not os.path.exists(f"contracts/{contract_address}/{contract_address}.bin"):
             return "Bytecode file does not exist."
-        with open(f"contracts/{contract_address}/{contract_address}.bin", mode="r") as file:
-            evm_bytecode = file.read()
-        # Generate a control flow graph
-        blocks = evm_cfg.create_basic_blocks(evm_bytecode)
-        graph = visualization.generate_graph(blocks)
-        # Save the graph to the specified .dot file
-        with open(f"contracts/{contract_address}/{contract_address}.dot", mode="w") as file:
-            graph.dot(file)
+        generate_cfg.generate_control_flow_graph(f"contracts/{contract_address}/{contract_address}.bin",f"contracts/{contract_address}/{contract_address}.dot")
+
         with open(f'contracts/{contract_address}/{contract_address}.dot') as f:
             output['cfg'] = f.read()
 
