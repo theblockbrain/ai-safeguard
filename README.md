@@ -1,4 +1,4 @@
-# NB-EVM Parser
+# AISafeGuard
 
 This tool is designed to parse and analyze Ethereum Virtual Machine (EVM) bytecode. It supports scraping bytecode from the blockchain, generating a control flow graph (CFG) of the contract, disassembling the bytecode, extracting function signatures, and auditing the contract.
 
@@ -39,7 +39,7 @@ python3 main.py <contract_address> [--rpc <node_url>] [--bytecode] [--cfg] [--di
 To scrape the bytecode from the blockchain and generate a CFG:
 
 ```
-python3 main.py 0x1234567890abcdef --rpc https://mainnet.infura.io/v3/73b02b9431874a228a4f576ff0e412a7 --bytecode --cfg
+python3 main.py 0x1234567890abcdef --rpc https://mainnet.infura.io/v3/YOUR-ID --bytecode --cfg
 ```
 
 
