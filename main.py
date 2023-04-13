@@ -17,7 +17,6 @@ coloredlogs.install(level='INFO', logger=logger, fmt='[%(levelname)s]: %(message
 
 # print the help message
 def help():
-    # python3 main.py 0xED5AF388653567Af2F388E6224dC7C4b3241C544 --rpc https://mainnet.infura.io/v3/73b02b9431874a228a4f576ff0e412a7 --bytecode --cfg --disasm --sigs --audit
     print("=================================================================================================================")
     print("                                                 NB-EVM Parser                                                   ")
     print("=================================================================================================================")
