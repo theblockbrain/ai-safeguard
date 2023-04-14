@@ -1,6 +1,6 @@
 # AISafeGuard
 
-This tool is designed to parse and analyze Ethereum Virtual Machine (EVM) bytecode. It supports scraping bytecode from the blockchain, generating a control flow graph (CFG) of the contract, disassembling the bytecode, extracting function signatures, and auditing the contract.
+This tool is designed to parse and analyze Ethereum Virtual Machine (EVM) bytecode. It supports scraping bytecode from the blockchain, generating a control flow graph (CFG) of the contract, disassembling the bytecode, extracting function signatures, and auditing the contract. The AI was trained on auditing NFT smart contracts.
 
 ## Requirements
 
