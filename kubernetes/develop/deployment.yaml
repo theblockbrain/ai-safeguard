@@ -1,0 +1,25 @@
+  name: ai-safeguard
+  namespace: ai-safeguard
+spec:
+  # do not set if HPA is used
+  # replicas: 1
+  selector:
+    matchLabels:
+      app: ai-safeguard
+  template:
+    metadata:
+      labels:
+        app: ai-safeguard
+    spec:
+      containers:
+        - image: ai-safeguard
+          name: ai-safeguard
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: 900Mi
+              cpu: 200m
+            limits:
+              memory: 2Gi
+              cpu: 1500m
