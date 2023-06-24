@@ -11,9 +11,16 @@ def load_file(path):
 	# Nodes must be indexed by consecutive integers for graph2vec
 	return nx.convert_node_labels_to_integers(G)
 
-def audit_contract(path):
+def audit_contract(path, token_type):
 	# Get the list of all model files in the "models" folder
-	model_files = [f for f in os.listdir("models") if f.startswith("model") and f.endswith("obj")]
+	if token_type == 'ERC-20':
+		model_dir = 'models_erc20'
+	elif token_type == 'ERC-721':
+		model_dir = 'models_erc721'
+	else:
+		raise ValueError(f"Invalid token_type: {token_type}")
+
+	model_files = [f for f in os.listdir(model_dir) if f.startswith("model") and f.endswith("obj")]
 
 	# Initialize lists to store the graph2vec and nn models
 	graph2vecs = []
@@ -22,7 +29,7 @@ def audit_contract(path):
 	# Loop through all the model files
 	for model_file in model_files:
 		# Load the trained model from each file
-		with open(os.path.join("models", model_file), "rb") as f:
+		with open(os.path.join(model_dir, model_file), "rb") as f:
 			data = pickle.load(f)
 		
 		# Extract the graph2vec and nn models from the loaded data
@@ -61,7 +68,3 @@ def audit_contract(path):
 	result = average_result # choose average
 
 	return result
-
-
-
-

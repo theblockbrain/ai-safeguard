@@ -1,0 +1,5 @@
+firebase-config.json
+__pycache__/
+contracts/
+dataset/
+venv/

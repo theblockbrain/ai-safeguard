@@ -1,4 +1,4 @@
-from evm_parser import evm_cfg
+from utils import evm_cfg
 from utils import visualization
 
 def generate_control_flow_graph(bytecode_file, dot_file):

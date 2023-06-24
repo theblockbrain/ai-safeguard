@@ -1,146 +1,158 @@
 <!DOCTYPE html>
-<html>
-   <head>
-      <title>Contract Parser</title>
-      <style>
-         body {
-         font-family: Arial, sans-serif;
-         background-color: #f0f0f0;
-         padding: 20px;
-         }
-         h1 {
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/static/Blockbrain_icon_black.png" type="image/png">
+    <title>AI-SafeGuard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            position: relative;
+            width: 80%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+
+        h1 {
          font-size: 36px;
          text-align: center;
-         margin-bottom: 30px;
-         }
-         form {
-         background-color: #fff;
-         border: 1px solid #ccc;
-         padding: 20px;
-         border-radius: 5px;
-         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-         max-width: 600px;
-         margin: 0 auto;
-         }
-         label {
-         display: inline-flex;
-         align-items: center;
-         margin-bottom: 10px;
-         }
-         input[type="text"] {
-         width: 100%;
-         padding: 10px;
-         border: 1px solid #ccc;
-         border-radius: 5px;
          margin-bottom: 20px;
          }
-         label > input[type="checkbox"] {
-         margin-right: 10px;
-         }
-         input[type="submit"] {
-         display: block;
-         margin: 0 auto;
-         width: 100%;
-         background-color: #4CAF50;
-         color: #fff;
-         border: none;
-         border-radius: 5px;
-         padding: 10px 20px;
-         cursor: pointer;
-         }
-         input[type="submit"]:hover {
-         background-color: #3e8e41;
-         }
-         hr {
-         margin-top: 50px;
-         margin-bottom: 50px;
-         border: 0;
-         border-top: 1px solid #ccc;
-         }
-         #bytecode-div,
-         #cfg-div,
-         #disasm-div,
-         #sigs-div,
-         #audit-div {
-         background-color: #fff;
-         border: 1px solid #ccc;
-         padding: 20px;
-         border-radius: 5px;
-         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-         margin-bottom: 20px;
-         }
-         textarea {
-         width: 100%;
-         padding: 10px;
-         border: 1px solid #ccc;
-         border-radius: 5px;
-         margin-bottom: 20px;
-         }
-      </style>
-   </head>
-   <body>
-      <h1>NB-EVM Parser</h1>
-      <form method="POST" action="/parse">
-         <label for="contract_address">Contract Address:</label>
-         <input type="text" name="contract_address" id="contract_address" required>
-         <br>
-         <label for="rpc_url">RPC URL:</label>
-         <input type="text" name="rpc_url" id="rpc_url">
-         <br>
-         <input type="checkbox" id="bytecode" name="bytecode">
-         <label for="bytecode">Scrape bytecode</label>
-         <br>
-         <input type="checkbox" id="cfg" name="cfg">
-         <label for="cfg">Generate control flow graph</label>
-         <br>
-         <input type="checkbox" id="disasm" name="disasm">
-         <label for="disasm">Generate disassembly</label>
-         <br>
-         <input type="checkbox" id="sigs" name="sigs">
-         <label for="sigs">Extract function signatures</label>
-         <br>
-         <input type="checkbox" id="audit" name="audit">
-         <label for="audit">Audit contract</label>
-         <br>
-         <input type="submit" value="Submit"> 
-      </form>
-      <hr>
-      {% if output %}
-      {% if output.get('bytecode') %}
-      <div id="bytecode-div">
-         Bytecode:
-         <br>
-         <textarea rows="10" cols="80">{{ output['bytecode'] }}</textarea>
-      </div>
-      {% endif %}
-      {% if output.get('cfg') %}
-      <div id="cfg-div">
-         Control Flow Graph:
-         <br>
-         <textarea rows="10" cols="80">{{ output['cfg'].replace('\\n', '\n') }}</textarea>
-      </div>
-      {% endif %}
-      {% if output.get('disasm') %}
-      <div id="disasm-div">
-         Disassembly:
-         <br>
-         <textarea rows="10" cols="80">{{ output['disasm'].replace('\\n', '\n') }}</textarea>
-      </div>
-      {% endif %}
-      {% if output.get('sigs') %}
-      <div id="sigs-div">
-         Signatures:
-         <br>
-         <textarea rows="10" cols="80">{{ output['sigs'].replace('\\n', '\n') }}</textarea>
-      </div>
-      {% endif %}
-      {% if output.get('audit') %}
-      <div id="audit-div">
-         Contract address: {{ contract_address }}
-         <br>
-         {{ output['audit'] | safe }}
-      </div>
-      {% endif %}
-      {% endif %}
-   </body>
+
+        form {
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], select, .textarea-output {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            padding: 4px;
+            width: calc(18% - 5px);
+            border: 0;
+            background-color: #5cb85c;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        input[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
+        .select-token {
+            width: 10%;
+        }
+
+        .loading-spinner {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: none;
+        width: 30px;
+        height: 30px;
+        border: 4px solid #ccc;
+        border-top-color: #4CAF50;
+        border-radius: 50%;
+        animation: spin 1s infinite linear;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666666;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+      }
+
+      footer a {
+        color: #4CAF50;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>AI-SafeGuard</h1>
+    <form action="/" method="post" onsubmit="showLoadingSpinner()">
+        <label for="token_type">Token Type:</label>
+        <select id="token_type" name="token_type" class="select-token">
+            <option value="ERC-20">ERC-20</option>
+            <option value="ERC-721">ERC-721</option>
+        </select>
+        <label for="contract_address">Contract Address:</label>
+        <input type="text" id="contract_address" name="contract_address" required>
+        <label for="rpc_url">RPC URL:</label>
+        <input type="text" id="rpc_url" name="rpc_url" required>
+        <div class="loading-spinner" id="loading_spinner"></div>
+        <div class="buttons">
+            <input type="submit" value="Bytecode" formaction="/scrape_bytecode">
+            <input type="submit" value="Cfg" formaction="/generate_cfg">
+            <input type="submit" value="Disassembly" formaction="/disasm">
+            <input type="submit" value="Signatures" formaction="/get_signatures">
+            <input type="submit" value="Audit" formaction="/audit_contract">
+        </div>
+    </form>
+    {% if output %}
+        <h2>Output:</h2>
+        <textarea rows="10" cols="80" class="textarea-output" readonly>{{ output.replace('\\n', '\n') }}</textarea>
+    {% endif %}
+    {% if error %}
+        <h2>Error:</h2>
+        <textarea class="textarea-output" style="color:red;" readonly>{{ error }}</textarea>
+    {% endif %}
+</div>
+<footer>
+    <p>API Documentation: <a href="/docs">API Docs</a>
+    </p>
+    <p>Developed by <a href="https://github.com/naderfyi" target="_blank">Nader</a>
+    </p>
+  </footer>
+</body>
+<script>
+    function showLoadingSpinner() {
+        var spinner = document.getElementById("loading_spinner");
+        spinner.style.display = "block";
+    }
+</script>
 </html>

@@ -1,8 +1,20 @@
-# To be able to use this you need to create a database of all functions signatures available at https://www.4byte.directory/
-import psycopg2
 import binascii
+import firebase_admin
+from firebase_admin import credentials, firestore
+from google.cloud.firestore_v1.base_query import FieldFilter
 
-def resolve_sigs(conn, bytecode):
+def initialize_firebase():
+    try:
+        firebase_cred = credentials.Certificate('firebase-config.json')
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(firebase_cred)
+        global db
+        db = firestore.client()
+    except Exception as e:
+        print(f"Error initializing Firebase: {e}")
+        exit(1)
+
+def resolve_sigs(bytecode):
     ops = []
 
     # basic parsing of evm bytecode
@@ -42,34 +54,37 @@ def resolve_sigs(conn, bytecode):
 
     signatures = []
     for selector in selectors:
-        name, err = resolve_sig(conn, selector)
-        if err is not None:
-            return [], err
-        signatures.append(name)
+        try:
+            name, err = resolve_sig(selector)
+            if err is not None:
+                print(f"Error resolving signature: {err}")
+                continue
+            signatures.append((binascii.hexlify(selector).decode(), name))
+        except Exception as e:
+            print(f"Error processing selector: {e}")
+            continue
 
-    return signatures, None
+    return signatures
 
-# resolve a function selector to a function name
-def resolve_sig(conn, bin_sig):
-    cur = conn.cursor()
-    cur.execute("SELECT Signature FROM signatures WHERE Code = %s", (psycopg2.Binary(bin_sig),))
-    rows = cur.fetchall()
-    if len(rows) > 0:
-        return rows[0][0], None
-    else:
-        return "0x" + binascii.hexlify(bin_sig).decode(), None
+def resolve_sig(bin_sig):
+    try:
+        sigs_ref = db.collection(u'Signature')
+        sigs = sigs_ref.where(filter=FieldFilter(u'Code', u'==', binascii.hexlify(bin_sig).decode())).stream()
+        for sig in sigs:
+            return sig.to_dict()['Signature'], None
+        print(f"Signature for selector {binascii.hexlify(bin_sig).decode()} not found in Firestore.")
+        return "Not found", None
+    except Exception as e:
+        print(f"Error querying Firestore: {e}")
+        return None, e
 
 # get the function signatures of a contract
 def get_signatures(bytecode):
+    initialize_firebase()
     try:
-        conn = psycopg2.connect(database="signatures", user="postgres", password="yourpass", host="localhost", port="5432")
-    except:
-        print("I am unable to connect to the database")
+        bytecode = bytes.fromhex(bytecode)
+    except Exception as e:
+        print(f"Error processing bytecode: {e}")
         exit(1)
 
-    bytecode = bytes.fromhex(bytecode)
-    signatures, err = resolve_sigs(conn, bytecode)
-    if err is not None:
-        print(err)
-        exit(1)
-    return signatures
+    return resolve_sigs(bytecode)

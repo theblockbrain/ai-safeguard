@@ -1,182 +1,203 @@
 import os
-import sys, pyevmasm
+import pyevmasm
+from fastapi import FastAPI, Request, Form
 from web3 import Web3
-from utils.generate_cfg import generate_control_flow_graph
-from evm_parser import evm_cfg
-from utils import visualization
+from utils import generate_cfg
 from utils.infer_models import audit_contract
 from utils.scrape_bytecode import scrape_bytecode
-from utils.signatures_evm import get_signatures
 import logging
 import coloredlogs
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from utils.signatures_evm import get_signatures
+
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # create logger
-# output colored logs to the console for level and message only
 logger = logging.getLogger(__name__)
 coloredlogs.install(level='INFO', logger=logger, fmt='[%(levelname)s]: %(message)s')
 
-# print the help message
-def help():
-    print("=================================================================================================================")
-    print("                                                 NB-EVM Parser                                                   ")
-    print("=================================================================================================================")
-    print("Usage: python3 main.py <contract_address> <--rpc> <node_url> [--bytecode] [--cfg] [--disasm] [--sigs] [--help]")
-    print("Usage: python3 main.py <contact_address> [--audit]")
-    print("")
-    print("Examples:")
-    print("python3 main.py 0x1234567890abcdef --rpc http://localhost:8545 --bytecode --cfg --disasm")
-    print("python3 main.py 0x1234567890abcdef --audit")
-    print("")
-    print("Required:")
-    print("<contract_address> : specify the contract address to parse")
-    print("--rpc : specify the rpc node to use needed to scrape the bytecode from the blockchain")
-    print("<node_url> : specify the url of the rpc node to use")
-    print("")
-    print("Options:")
-    print("--bytecode : scrape bytecode from the specified node")
-    print("--cfg : generate the control flow graph of the contract")
-    print("--disasm : disassemble the bytecode")
-    print("--sigs : extract the signatures of the contract")
-    print("--audit : audit the contract")
-    print("--help : show this message")
-    print("")
-    print("Note: The bytecode file is required for the --cfg, --disasm, and --sigs flags.")
-    print("      Use the --bytecode flag to scrape bytecode first.")
-    print("      The bytecode file will be saved to the contracts/<contract_address> directory.")
-    print("")
-    print("=================================================================================================================")
-    exit(0)
-
-# check if the user provided the correct input
-def validate_input():
-    # check if user provided a contract address
-    if len(sys.argv) < 2:
-        logger.error("No contract address provided.")
-        help()
-    if len(sys.argv) == 2 and sys.argv[1] == "--help":
-        help()
-    if len(sys.argv) == 2 and sys.argv[1] == "--audit":
-        logger.error("No contract address provided.")
-        help()
-    if len(sys.argv) < 3:
-        logger.error("No flags provided.")
-        help()
-    if len(sys.argv) > 2 and len(sys.argv) < 4 and sys.argv[2] != "--audit":
-        logger.error("No rpc node provided.")
-        logger.error("Use the --rpc flag to specify an rpc node to use (required for bytecode scraping)")
-        logger.error("Example: python3 main.py 0x1234567890abcdef --rpc http://localhost:8545")
-        help()
-
-    # check if user provided an rpc node
-    if "--rpc" in sys.argv and len(sys.argv) < 4:
-        logger.error("No rpc node provided.")
-        logger.error("Use the --rpc flag to specify an rpc node to use (required for bytecode scraping)")
-        logger.error("Example: python3 main.py 0x1234567890abcdef --rpc http://localhost:8545")
-        help()
-    if "--rpc" in sys.argv and len(sys.argv) == 4:
-        logger.error("No flags provided.")
-        help()
-
-    # check if the user used invalid flags
-    for arg in sys.argv:
-        if arg.startswith("--") and arg not in ["--rpc", "--bytecode", "--cfg", "--disasm", "--sigs", "--audit" , "--help"]:
-            logger.error(f"Invalid flag {arg}")
-            help()
-
-# parse the command line arguments
-def parse_arguments():
-    # get the contract address from the command line arguments
-    contract_address = sys.argv[1]
+def validate_contract_address(contract_address):
     if not Web3.is_address(contract_address):
-        # use logger instead of print
-        logger.error("Invalid contract address.")
-    contract_dir="contracts/"+contract_address+"/"
+        error = 'Invalid contract address.'
+        return False, error
+    return True, None
 
-    # check if the user wants to see the help message
-    if "--help" in sys.argv:
-        help()
+def validate_rpc_url(rpc_url):
+    if not rpc_url:
+        error = 'RPC URL is required.'
+        return False, error
+    return True, None
 
-    # get the node from the command line arguments
-    if "--rpc" in sys.argv:
-        node = sys.argv[sys.argv.index("--rpc")+1]
-        if node is not None:
-            web3 = Web3(Web3.HTTPProvider(node))
-            if not web3.is_connected():
-                logger.error("Invalid node.")
-                logger.error("Use the --rpc flag to specify an rpc node to use (required for bytecode scraping)")
-                logger.error("Example: python3 main.py 0x1234567890abcdef --rpc http://localhost:8545")
-                help()
+@app.get('/')
+def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-    # check if the user wants to scrape bytecode
-    if "--bytecode" in sys.argv:
-        scrape_bytecode(contract_address, node)
-        logger.info("Bytecode scraped.")
+@app.post('/scrape_bytecode')
+def scrape_bytecode_route(request: Request, contract_address: str = Form(...), rpc_url: str = Form(...)):
+    try:
+        # Validate input values
+        valid_address, address_error = validate_contract_address(contract_address)
+        if not valid_address:
+            return templates.TemplateResponse("index.html", {"request": request, "error": address_error})
 
-    # check if the user wants to generate a control flow graph
-    if "--cfg" in sys.argv:
-        # check if the bytecode file exists
-        if not os.path.exists(contract_dir+contract_address+".bin"):
-            logger.error("Bytecode file does not exist.")
-            logger.error("Use the --bytecode flag to scrape bytecode first.")
-            exit(1)
-        generate_control_flow_graph(contract_dir+contract_address+".bin",contract_dir+contract_address+".dot")
+        valid_rpc, rpc_error = validate_rpc_url(rpc_url)
+        if not valid_rpc:
+            return templates.TemplateResponse("index.html", {"request": request, "error": rpc_error})
 
-    # check if the user wants to generate a disassembly
-    if "--disasm" in sys.argv:
-        # check if the bytecode file exists
-        if not os.path.exists(contract_dir+contract_address+".bin"):
-            logger.error("Bytecode file does not exist.")
-            logger.error("Use the --bytecode flag to scrape bytecode first.")
-            exit(1)
-        with open(contract_dir+contract_address+".bin", mode="r") as file:
+        scrape_bytecode(contract_address, rpc_url)
+        bin_file = f'contracts/{contract_address}/{contract_address}.bin'
+        if os.path.exists(bin_file):
+            with open(bin_file) as f:
+                output = f.read()
+        return templates.TemplateResponse("index.html", {"request": request, "contract_address": contract_address, "output": output})
+
+    except Exception as e:
+        error = f"Error scraping bytecode: {e}"
+        logger.error(error)
+        return templates.TemplateResponse("index.html", {"request": request, "error": error})
+    
+@app.post('/generate_cfg')
+def generate_cfg_route(request: Request, contract_address: str = Form(...), rpc_url: str = Form(...)):
+    try:
+        valid_address, address_error = validate_contract_address(contract_address)
+        if not valid_address:
+            return templates.TemplateResponse("index.html", {"request": request, "error": address_error})
+
+        valid_rpc, rpc_error = validate_rpc_url(rpc_url)
+        if not valid_rpc:
+            return templates.TemplateResponse("index.html", {"request": request, "error": rpc_error})
+
+        bin_file = f'contracts/{contract_address}/{contract_address}.bin'
+        if not os.path.exists(bin_file):
+            scrape_bytecode(contract_address, rpc_url)
+            if not os.path.exists(bin_file):
+                error = "Bytecode file does not exist."
+                return templates.TemplateResponse("index.html", {"request": request, "error": error})
+
+        generate_cfg.generate_control_flow_graph(bin_file, f"contracts/{contract_address}/{contract_address}.dot")
+
+        dot_file = f'contracts/{contract_address}/{contract_address}.dot'
+        if os.path.exists(dot_file):
+            with open(dot_file) as f:
+                output = f.read()
+
+        return templates.TemplateResponse("index.html", {"request": request, "contract_address": contract_address, "output": output})
+
+    except Exception as e:
+        error = f"Error generating cfg: {e}"
+        logger.error(error)
+        return templates.TemplateResponse("index.html", {"request": request, "error": error})
+
+
+@app.post('/disasm')
+def disasm_route(request: Request, contract_address: str = Form(...), rpc_url: str = Form(...)):
+    try:
+        valid_address, address_error = validate_contract_address(contract_address)
+        if not valid_address:
+            return templates.TemplateResponse("index.html", {"request": request, "error": address_error})
+
+        valid_rpc, rpc_error = validate_rpc_url(rpc_url)
+        if not valid_rpc:
+            return templates.TemplateResponse("index.html", {"request": request, "error": rpc_error})
+
+        bin_file = f'contracts/{contract_address}/{contract_address}.bin'
+        if not os.path.exists(bin_file):
+            scrape_bytecode(contract_address, rpc_url)
+            if not os.path.exists(bin_file):
+                error = "Bytecode file does not exist."
+                return templates.TemplateResponse("index.html", {"request": request, "error": error})
+
+        with open(bin_file, mode="r") as file:
             evm_bytecode = file.read()
         disassembly = pyevmasm.evmasm.disassemble(evm_bytecode)
-        with open(contract_dir+contract_address+".asm", mode="w") as file:
+        asm_file = f"contracts/{contract_address}/{contract_address}.asm"
+        with open(asm_file, mode="w") as file:
             file.write(disassembly)
-        logger.info("Disassembly saved.")
+        if os.path.exists(asm_file):
+            with open(asm_file) as f:
+                output = f.read()
 
-    # check if the user wants to generate a list of function signatures
-    if "--sigs" in sys.argv:
-        # check if the bytecode file exists
-        if not os.path.exists(contract_dir+contract_address+".bin"):
-            logger.error("Bytecode file does not exist.")
-            logger.error("Use the --bytecode flag to scrape bytecode first.")
-            exit(1)
-        with open(contract_dir+contract_address+".bin", mode="r") as file:
+        return templates.TemplateResponse("index.html", {"request": request, "contract_address": contract_address, "output": output})
+
+    except Exception as e:
+        error = f"Error generating disasm: {e}"
+        logger.error(error)
+        return templates.TemplateResponse("index.html", {"request": request, "error": error})
+
+
+@app.post('/get_signatures')
+def get_signatures_route(request: Request, contract_address: str = Form(...), rpc_url: str = Form(...)):
+    try:
+        valid_address, address_error = validate_contract_address(contract_address)
+        if not valid_address:
+            return templates.TemplateResponse("index.html", {"request": request, "error": address_error})
+
+        valid_rpc, rpc_error = validate_rpc_url(rpc_url)
+        if not valid_rpc:
+            return templates.TemplateResponse("index.html", {"request": request, "error": rpc_error})
+
+        bin_file = f'contracts/{contract_address}/{contract_address}.bin'
+        if not os.path.exists(bin_file):
+            scrape_bytecode(contract_address, rpc_url)
+            if not os.path.exists(bin_file):
+                error = "Bytecode file does not exist."
+                return templates.TemplateResponse("index.html", {"request": request, "error": error})
+
+        with open(bin_file, mode="r") as file:
             evm_bytecode = file.read()
         signatures = get_signatures(evm_bytecode)
-        with open(contract_dir+contract_address+".sigs", mode="w") as file:
+        sigs_file = f"contracts/{contract_address}/{contract_address}.sigs"
+        with open(sigs_file, mode="w") as file:
             for sig in signatures:
-                file.write(sig + "\n")
-        logger.info("Function signatures saved.")
-    
-    # check if the user wants to audit the contract
-    if "--audit" in sys.argv:
-        # check if the .dot file exists
-        if not os.path.exists(contract_dir+contract_address+".dot"):
-            logger.error("Control flow graph file does not exist.")
-            logger.error("Use the --cfg flag to generate a control flow graph first.")
-            exit(1)
-        #if it does, run the audit using the path to the .dot file
-        result= audit_contract(contract_dir+contract_address+".dot")
-        # convert to %
-        result = result * 100
-        # print info message if higher than 50% then malicious else non malicious and print percentage
-        if result > 50:
-            logger.info("Contract address: {}".format(contract_address))
-            logger.info("Result: {:f}%".format(result))
-            logger.error("Contract is malicious")
+                formatted_sig = f"0x{sig[0]}: {sig[1]}"
+                file.write(formatted_sig + "\n")
+        if os.path.exists(sigs_file):
+            with open(sigs_file) as f:
+                output = f.read()
+
+        return templates.TemplateResponse("index.html", {"request": request, "contract_address": contract_address, "output": output})
+
+    except Exception as e:
+        error = f"Error generating signatures: {e}"
+        logger.error(error)
+        return templates.TemplateResponse("index.html", {"request": request, "error": error})
+
+
+@app.post('/audit_contract')
+def audit_contract_route(request: Request, contract_address: str = Form(...), rpc_url: str = Form(...), token_type: str = Form(...)):
+    try:
+        valid_address, address_error = validate_contract_address(contract_address)
+        if not valid_address:
+            return templates.TemplateResponse("index.html", {"request": request, "error": address_error})
+
+        valid_rpc, rpc_error = validate_rpc_url(rpc_url)
+        if not valid_rpc:
+            return templates.TemplateResponse("index.html", {"request": request, "error": rpc_error})
+
+        dot_file = f'contracts/{contract_address}/{contract_address}.dot'
+        if not os.path.exists(dot_file):
+            bin_file = f'contracts/{contract_address}/{contract_address}.bin'
+            if not os.path.exists(bin_file):
+                scrape_bytecode(contract_address, rpc_url)
+            if os.path.exists(bin_file):
+                generate_cfg.generate_control_flow_graph(bin_file, dot_file)
+
+        if os.path.exists(dot_file):
+            result = audit_contract(dot_file, token_type)
+            result = f"{result * 100:.2f}"
+            if float(result) > 50:
+                output = f"Result: {result}% ➡️ Contract is most likely malicious ⚠️🚫"
+            else:
+                output = f"Result: {result} ➡️ Contract is most likely non-malicious ✅"
         else:
-            logger.info("Contract address: {}".format(contract_address))
-            logger.info("Result: {:f}%".format(result))
-            logger.info("Contract is non malicious")
+            output = 'Control flow graph file does not exist.'
 
-# Main function
-def main():
-    validate_input()
-    parse_arguments()
+        return templates.TemplateResponse("index.html", {"request": request, "contract_address": contract_address, "output": output})
 
-# Run the main function
-if __name__ == "__main__":
-    main()
-    
+    except Exception as e:
+        error = f"Error auditing contract: {e}"
+        logger.error(error)
+        return templates.TemplateResponse("index.html", {"request": request, "error": error})
