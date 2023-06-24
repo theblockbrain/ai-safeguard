@@ -3,3 +3,4 @@ __pycache__/
 contracts/
 dataset/
 venv/
+.DS_Store
