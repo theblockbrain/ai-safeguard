@@ -1,8 +1,6 @@
   name: ai-safeguard
   namespace: ai-safeguard
 spec:
-  # do not set if HPA is used
-  # replicas: 1
   selector:
     matchLabels:
       app: ai-safeguard
