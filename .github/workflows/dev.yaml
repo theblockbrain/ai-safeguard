@@ -1,0 +1,18 @@
+name: Docker build, push and deploy to Dev
+
+on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - "kubernetes/**"
+      - ".github/workflows/**"
+      - "README.md"
+
+jobs:
+  call-workflow-passing-data:
+    uses: theblockbrain/workflows/.github/workflows/dev.yml@0.1.1
+    with:
+      container-name: ai-safeguard
+    secrets:
+      iam-role: arn:aws:iam::853310098537:role/github-ecr
