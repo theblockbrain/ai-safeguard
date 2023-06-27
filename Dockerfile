@@ -7,7 +7,9 @@ WORKDIR /app
 # Installing required packages
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y git
+    apt-get install -y git \
+    apt-get install python-dev graphviz libgraphviz-dev pkg-config \
+    apt-get install python3-dev graphviz libgraphviz-dev pkg-config
 
 # Copy requirements.txt into the working directory
 COPY requirements.txt requirements.txt
