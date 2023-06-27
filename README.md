@@ -29,8 +29,8 @@ This project requires the following libraries:
 To get started, clone the repo and install the dependencies:
 
 ```bash
-git clone https://github.com/yourusername/ethereum-contract-analyzer.git
-cd ethereum-contract-analyzer
+git clone https://github.com/theblockbrain/ai-safeguard.git
+cd ai-safeguard
 pip install -r requirements.txt
 ```
 
