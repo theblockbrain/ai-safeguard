@@ -10,3 +10,4 @@ coloredlogs
 uvicorn
 graphviz
 pygraphviz
+python-multipart
