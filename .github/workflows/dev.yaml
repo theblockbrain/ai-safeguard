@@ -9,6 +9,10 @@ on:
       - ".github/workflows/**"
       - "README.md"
   workflow_dispatch:
+  
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   call-workflow-passing-data:
