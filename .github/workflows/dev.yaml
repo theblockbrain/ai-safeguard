@@ -8,6 +8,7 @@ on:
       - "kubernetes/**"
       - ".github/workflows/**"
       - "README.md"
+  workflow_dispatch:
 
 jobs:
   call-workflow-passing-data:
