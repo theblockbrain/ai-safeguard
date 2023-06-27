@@ -59,7 +59,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # Authors
 
-- **[Nader Bennour](www.linkedin.com/in/naderfyi)** - *Initial work*
+- **[Nader Bennour](https://linkedin.com/in/naderfyi)** - *Initial work*
 
 ## Note
 
