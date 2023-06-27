@@ -1,3 +1,6 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: ai-safeguard
   namespace: ai-safeguard
 spec:
