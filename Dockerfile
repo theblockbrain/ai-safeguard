@@ -8,8 +8,7 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git && \
-    apt-get install -y python-dev graphviz libgraphviz-dev pkg-config && \
-    apt-get install -y python3-dev graphviz libgraphviz-dev pkg-config
+    apt-get install -y --no-install-recommends gcc python3-dev graphviz libgraphviz-dev
 
 # Copy requirements.txt into the working directory
 COPY requirements.txt requirements.txt
@@ -20,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-# Expose the Streamlit port
+# Expose the fastapi port
 EXPOSE 8000
 
 # Start the fastapi app
