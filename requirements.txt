@@ -83,6 +83,7 @@ torch==2.0.1
 typing_extensions==4.6.3
 uritemplate==4.1.1
 urllib3==1.24.3
+uvicorn==0.22.0
 web3 @ git+https://github.com/ethereum/web3.py.git@a9433ff8856237f9e382208724e3243de073682a
 websockets==11.0.3
 yarl==1.9.2
