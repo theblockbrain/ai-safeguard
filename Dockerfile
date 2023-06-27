@@ -4,6 +4,11 @@ FROM python:3.11-slim-buster
 # Set the working directory
 WORKDIR /app
 
+# Installing required packages
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git
+
 # Copy requirements.txt into the working directory
 COPY requirements.txt requirements.txt
 
