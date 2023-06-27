@@ -1,6 +1,6 @@
 torch
 networkx
-web3 @ git+https://github.com/ethereum/web3.py.git@a9433ff8856237f9e382208724e3243de073682a
+web3
 firebase_admin
 gvgen
 pyevmasm
