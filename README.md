@@ -42,7 +42,7 @@ To run the application, use the following command:
 uvicorn main:app --reload
 ```
 
-The application will be available at https://ai-safeguard.dev.theblockbrain.io/
+The application will be available at https://ai-safeguard.dev.theblockbrain.io/.
 
 ## Documentation
 
