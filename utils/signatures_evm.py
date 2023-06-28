@@ -3,10 +3,13 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
+import json
 
 def initialize_firebase():
     try:
-        firebase_cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG'))
+        firebase_config_path = os.environ.get('FIREBASE_CONFIG')
+        with open(firebase_config_path) as json_file:
+            firebase_cred = credentials.Certificate(json.load(json_file))
         if not firebase_admin._apps:
             firebase_admin.initialize_app(firebase_cred)
         global db
