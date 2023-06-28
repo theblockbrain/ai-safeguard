@@ -8,6 +8,7 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git && \
+    apt-get install -y g++ && \
     apt-get install -y --no-install-recommends gcc python3-dev graphviz libgraphviz-dev
 
 # Copy requirements.txt into the working directory
