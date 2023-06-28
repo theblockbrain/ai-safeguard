@@ -11,3 +11,4 @@ uvicorn
 graphviz
 pygraphviz
 python-multipart
+karateclub
