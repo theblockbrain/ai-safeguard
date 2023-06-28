@@ -1,5 +1,6 @@
 torch
 networkx
+karateclub
 web3
 firebase_admin
 gvgen
@@ -11,4 +12,3 @@ uvicorn
 graphviz
 pygraphviz
 python-multipart
-karateclub
