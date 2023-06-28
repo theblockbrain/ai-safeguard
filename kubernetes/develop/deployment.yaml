@@ -24,3 +24,9 @@ spec:
             limits:
               memory: 2Gi
               cpu: 1500m
+          env:
+            - name: FIREBASE_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: ai-safeguard-secrets
+                  key: firebase-config
