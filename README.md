@@ -50,8 +50,7 @@ The documentation for this project is available at https://ai-safeguard.dev.theb
 
 # Contributing
 
-We welcome contributions to this project. Please feel free to open a pull request or an issue on the GitHub page.
-
+We welcome contributions to this project. Please feel free to open a pull request or an issue on the GitHub page. 
 
 # License
 
