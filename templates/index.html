@@ -109,11 +109,67 @@
         text-decoration: underline;
       }
 
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .tooltip {
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+        }
+
+        .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 200px;
+          background-color: #555;
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 5px;
+          position: absolute;
+          z-index: 1;
+          bottom: 100%; /* Place tooltip above the text */
+          left: 50%;
+          margin-left: -100px; /* -1 * tooltip width / 2 to center it */
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+
+        .tooltip .tooltiptext::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+          visibility: visible;
+          opacity: 1;
+        }
+
+        .info-text {
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #f9f9f9;
+            text-align: justify;
+            font-size: 16px;
+            line-height: 1.6;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>AI-SafeGuard</h1>
+    <p class="info-text">AI-SafeGuard is an innovative tool that uses AI to scan Smart Contract bytecode, assessing for risks. For a deeper understanding, explore our <a href="https://theblockbrain.io/research/publications/open-sourcing-our-nft-smart-contract-bytecode-risk-analyzer-ai/" target="_blank">Blog Article</a>.</p>
     <form action="/" method="post" onsubmit="showLoadingSpinner()">
         <label for="token_type">Token Type:</label>
         <select id="token_type" name="token_type" class="select-token">
@@ -122,7 +178,12 @@
         </select>
         <label for="contract_address">Contract Address:</label>
         <input type="text" id="contract_address" name="contract_address" required>
-        <label for="rpc_url">RPC URL:</label>
+        <label for="rpc_url">RPC URL:
+            <div class="tooltip">
+              <img src="/static/info-icon.png" class="info-icon" alt="info icon">
+              <span class="tooltiptext">Obtain an RPC URL by signing up on Infura and creating a new project. The RPC URL will be in your project settings.</span>
+            </div>
+        </label>
         <input type="text" id="rpc_url" name="rpc_url" required>
         <div class="loading-spinner" id="loading_spinner"></div>
         <div class="buttons">
@@ -145,7 +206,7 @@
 <footer>
     <p>API Documentation: <a href="/docs">API Docs</a>
     </p>
-    <p>Developed by <a href="https://github.com/naderfyi" target="_blank">Nader</a>
+    <p>Developed by <a href="https://github.com/naderfyi" target="_blank">Nader</a> in collaboration with <a href="https://theblockbrain.io/" target="_blank">Blockbrain</a>
     </p>
   </footer>
 </body>
