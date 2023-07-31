@@ -1,219 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/static/Blockbrain_icon_black.png" type="image/png">
-    <title>AI-SafeGuard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            position: relative;
-            width: 80%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px #ccc;
-        }
-
-        h1 {
-         font-size: 36px;
-         text-align: center;
-         margin-bottom: 20px;
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="icon" href="/static/Logo_turkis.png" type="image/png">
+      <title>Blockbrain AI Safe Guard</title>
+      <style>
+         @font-face {
+         font-family: "Outfit";
+         src: url("/static/font/Outfit-Regular.ttf") format("truetype");
          }
-
-        form {
-            padding: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"], select, .textarea-output {
-            width: calc(100% - 40px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-        }
-        input[type="submit"] {
-            padding: 4px;
-            width: calc(18% - 5px);
-            border: 0;
-            background-color: #5cb85c;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px 5px;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        input[type="submit"]:hover {
-            background-color: #4cae4c;
-        }
-        .select-token {
-            width: 10%;
-        }
-
-        .loading-spinner {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        display: none;
-        width: 30px;
-        height: 30px;
-        border: 4px solid #ccc;
-        border-top-color: #4CAF50;
-        border-radius: 50%;
-        animation: spin 1s infinite linear;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-        color: #666666;
-        border-top: 1px solid #ccc;
-        padding-top: 20px;
-      }
-
-      footer a {
-        color: #4CAF50;
-        text-decoration: none;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-        .info-icon {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .tooltip {
-          position: relative;
-          display: inline-block;
-          cursor: pointer;
-        }
-
-        .tooltip .tooltiptext {
-          visibility: hidden;
-          width: 200px;
-          background-color: #555;
-          color: #fff;
-          text-align: center;
-          border-radius: 6px;
-          padding: 5px;
-          position: absolute;
-          z-index: 1;
-          bottom: 100%; /* Place tooltip above the text */
-          left: 50%;
-          margin-left: -100px; /* -1 * tooltip width / 2 to center it */
-          opacity: 0;
-          transition: opacity 0.3s;
-        }
-
-        .tooltip .tooltiptext::after {
-          content: "";
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          margin-left: -5px;
-          border-width: 5px;
-          border-style: solid;
-          border-color: #555 transparent transparent transparent;
-        }
-
-        .tooltip:hover .tooltiptext {
-          visibility: visible;
-          opacity: 1;
-        }
-
-        .info-text {
-            border: 1px solid #ddd;
-            padding: 15px;
-            background-color: #f9f9f9;
-            text-align: justify;
-            font-size: 16px;
-            line-height: 1.6;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>AI-SafeGuard</h1>
-    <p class="info-text">AI-SafeGuard is an innovative tool that uses AI to scan Smart Contract bytecode, assessing for risks. For a deeper understanding, explore our <a href="https://theblockbrain.io/research/publications/open-sourcing-our-nft-smart-contract-bytecode-risk-analyzer-ai/" target="_blank">Blog Article</a>.</p>
-    <form action="/" method="post" onsubmit="showLoadingSpinner()">
-        <label for="token_type">Token Type:</label>
-        <select id="token_type" name="token_type" class="select-token">
-            <option value="ERC-20">ERC-20</option>
-            <option value="ERC-721">ERC-721</option>
-        </select>
-        <label for="contract_address">Contract Address:</label>
-        <input type="text" id="contract_address" name="contract_address" required>
-        <label for="rpc_url">RPC URL:
-            <div class="tooltip">
-              <img src="/static/info-icon.png" class="info-icon" alt="info icon">
-              <span class="tooltiptext">Obtain an RPC URL by signing up on Infura and creating a new project. The RPC URL will be in your project settings.</span>
+         body {
+         font-family: "Outfit", sans-serif;
+         }
+         .select-token {
+         width: 10%;
+         }
+         .loading-spinner {
+         display: none;
+         border-radius: 50%;
+         animation: spin 1s infinite linear;
+         }
+         @keyframes spin {
+         0% {
+         transform: rotate(0deg);
+         }
+         100% {
+         transform: rotate(360deg);
+         }
+         }
+         .tooltip {
+         position: relative;
+         display: inline-block;
+         cursor: pointer;
+         }
+         .tooltip .tooltiptext {
+         visibility: hidden;
+         width: 200px;
+         background-color: #555;
+         color: #fff;
+         text-align: center;
+         border-radius: 6px;
+         padding: 5px;
+         position: absolute;
+         z-index: 1;
+         bottom: 100%; /* Place tooltip above the text */
+         left: 50%;
+         margin-left: -100px; /* -1 * tooltip width / 2 to center it */
+         opacity: 0;
+         transition: opacity 0.3s;
+         }
+         .tooltip .tooltiptext::after {
+         content: "";
+         position: absolute;
+         top: 100%;
+         left: 50%;
+         margin-left: -5px;
+         border-width: 5px;
+         border-style: solid;
+         border-color: #555 transparent transparent transparent;
+         }
+         .tooltip:hover .tooltiptext {
+         visibility: visible;
+         opacity: 1;
+         }
+      </style>
+   </head>
+   <body class="bg-white text-black dark:bg-slate-900 dark:text-white p-0 flex flex-col h-screen">
+      <div class="py-4 bg-gradient-to-b from-slate-700 to-slate-900 text-slate-300 px-4">
+         <div class="container mx-auto text-2xl font-bold flex gap-4 items-center">
+            <img src="/static/Logo_turkis.png" width="40" height="40" />
+            <span>AI SafeGuard</span>
+            <span class="flex-1"></span>
+            <div class="loading-spinner border border-4 border-slate/10 dark:border-white/10 border-t-green-400 dark:border-t-green-400 w-10 h-10" id="loading_spinner"></div>
+         </div>
+      </div>
+      <div class="container mx-auto mt-8 px-4 flex-1">
+         <p class="px-4 py-2 bg-gradient-to-b bg-slate-200 rounded-lg text-slate-700 outline-dashed outline-offset-4 outline-2 outline-slate-200 text-center">
+            <strong>AI SafeGuard</strong> is an innovative tool that uses AI to scan Smart Contract bytecode, assessing for risks.
+            For a deeper understanding, explore our
+            <a href="https://theblockbrain.io/research/publications/open-sourcing-our-nft-smart-contract-bytecode-risk-analyzer-ai/" target="_blank" class="text-green-500 font-bold">Blog Article</a>.
+         </p>
+         <form action="/" method="post" onsubmit="showLoadingSpinner()" class="flex gap-6 flex-wrap my-6">
+            <div class="flex-1 min-w-max">
+               <label for="token_type" class="text-sm block flex gap-1 items-center h-8">Token Type</label>
+               <select id="token_type" name="token_type" class="rounded-lg bg-slate-50 border border-slate-200 h-10 focus-visible:outline-green-500 text-slate-700 px-2 w-full">
+                  <option value="ERC-20">ERC-20</option>
+                  <option value="ERC-721">ERC-721</option>
+               </select>
             </div>
-        </label>
-        <input type="text" id="rpc_url" name="rpc_url" required>
-        <div class="loading-spinner" id="loading_spinner"></div>
-        <div class="buttons">
-            <input type="submit" value="Bytecode" formaction="/scrape_bytecode">
-            <input type="submit" value="Cfg" formaction="/generate_cfg">
-            <input type="submit" value="Disassembly" formaction="/disasm">
-            <input type="submit" value="Signatures" formaction="/get_signatures">
-            <input type="submit" value="Audit" formaction="/audit_contract">
-        </div>
-    </form>
-    {% if output %}
-        <h2>Output:</h2>
-        <textarea rows="10" cols="80" class="textarea-output" readonly>{{ output.replace('\\n', '\n') }}</textarea>
-    {% endif %}
-    {% if error %}
-        <h2>Error:</h2>
-        <textarea class="textarea-output" style="color:red;" readonly>{{ error }}</textarea>
-    {% endif %}
-</div>
-<footer>
-    <p>API Documentation: <a href="/docs">API Docs</a>
-    </p>
-    <p>Developed by <a href="https://github.com/naderfyi" target="_blank">Nader</a> in collaboration with <a href="https://theblockbrain.io/" target="_blank">Blockbrain</a>
-    </p>
-  </footer>
-</body>
-<script>
-    function showLoadingSpinner() {
-        var spinner = document.getElementById("loading_spinner");
-        spinner.style.display = "block";
-    }
-</script>
+            <div class="flex-1 min-w-max">
+               <label for="contract_address" class="text-sm block flex gap-1 items-center h-8">Contract Address</label>
+               <input type="text" id="contract_address" name="contract_address" required placeholder="Enter Address" class="rounded-lg bg-slate-50 border border-slate-200 h-10 focus-visible:outline-green-500 text-slate-700 px-3 w-full">
+            </div>
+            <div class="flex-1 min-w-max">
+               <label for="rpc_url" class="text-sm block flex gap-1 items-center h-8">
+                  RPC URL
+                  <div class="tooltip">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                     </svg>
+                     <span class="tooltiptext">Obtain an RPC URL by signing up on Infura and creating a new project. The RPC URL will be in your project settings.</span>
+                  </div>
+               </label>
+               <input type="text" id="rpc_url" name="rpc_url" required placeholder="Enter URL" class="rounded-lg bg-slate-50 border border-slate-200 h-10 focus-visible:outline-green-500 text-slate-700 px-3 w-full">
+            </div>
+            <div class="w-full p-4 border border-slate-200 dark:border-slate-700 rounded-xl relative">
+               <small class="absolute top-0 h-6 px-2 bg-white dark:bg-slate-900 -mt-3 flex items-center">Actions</small>
+               <div class="w-full flex items-center gap-3 justify-center">
+                  <button type="submit" value="Bytecode" formaction="/scrape_bytecode" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Bytecode</button>
+                  <button type="submit" value="Cfg" formaction="/generate_cfg" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Cfg</button>
+                  <button type="submit" value="Disassembly" formaction="/disasm" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Disassembly</button>
+                  <button type="submit" value="Signatures" formaction="/get_signatures" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Signatures</button>
+               </div>
+               <div class="w-full mt-2 flex items-center gap-3 justify-center">
+                  <button type="submit" value="Audit" formaction="/audit_contract" class="w-full text-xl px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out flex items-center gap-2 justify-center">             
+                    Audit
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                    </svg>
+                  </button>
+               </div>
+            </div>
+         </form>
+         {% if output %}
+         <h2 class="font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-t-lg">Output</h2>
+         <textarea rows="10" cols="80" readonly class="w-full rounded-b-lg border border-slate-200 dark:border-slate-700 p-4 font-mono bg-white dark:bg-slate-900">{{ output.replace('\\n', '\n') }}</textarea>
+         {% endif %}
+         {% if error %}
+         <h2 class="font-bold bg-red-200 text-red-700 px-4 py-2 rounded-t-lg">Error</h2>
+         <textarea class="w-full text-red-500 rounded-b-lg border border-red-200 p-4 font-mono bg-white dark:bg-slate-900" readonly>{{ error }}</textarea>
+         {% endif %}
+      </div>
+      <footer class="mt-8 p-4 border-t border-slate-200 dark:border-slate-700">
+         <div class="container mx-auto text-center">
+            <p><a href="/docs" class="text-green-400 hover:underline">API Docs</a>
+            </p>
+            <p class="text-sm">Developed by <a href="https://github.com/naderfyi" target="_blank" class="text-green-400 hover:underline">Nader</a> in collaboration with <a href="https://theblockbrain.io/" target="_blank" class="text-green-400 hover:underline">Blockbrain</a>
+            </p>
+         </div>
+      </footer>
+   </body>
+   <script>
+      const showLoadingSpinner = () => {
+          const tokenType = document.getElementById("token_type").value
+          const contractAddress = document.getElementById("contract_address").value
+          const rpcUrl = document.getElementById("rpc_url").value
+
+          updateLastValue("token_type", tokenType);
+          updateLastValue("contract_address", contractAddress);
+          updateLastValue("rpc_url", rpcUrl);
+
+          var spinner = document.getElementById("loading_spinner");
+          spinner.style.display = "block";
+      }
+
+      const updateLastValue = (param, value) => {
+        localStorage.setItem(param, value)
+      };
+
+      (() => {
+        // load last entered values
+        const tokenType = localStorage.getItem('token_type');
+        const contractAddress = localStorage.getItem('contract_address');
+        const rpcUrl = localStorage.getItem('rpc_url');
+
+        document.getElementById("token_type").value = tokenType ?? "ERC-20"
+        document.getElementById("contract_address").value = contractAddress ?? ""
+        document.getElementById("rpc_url").value = rpcUrl ?? ""
+      })()
+   </script>
 </html>
