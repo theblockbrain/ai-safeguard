@@ -8,4 +8,4 @@ resources:
 images:
 - name: ai-safeguard
   newName: 853310098537.dkr.ecr.eu-central-1.amazonaws.com/ai-safeguard
-  newTag: main-5d73d9d6-1690791598
+  newTag: main-c23714ff-1690803497
