@@ -5,20 +5,33 @@ from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 import json
 
-def initialize_firebase():
+def initialize_firebase() -> None:
     try:
-        firebase_config_path = os.environ.get('FIREBASE_CONFIG')
-        with open(firebase_config_path) as json_file:
-            firebase_cred = credentials.Certificate(json.load(json_file))
+        firebase_config = os.environ.get('FIREBASE_CONFIG')
+        if firebase_config:
+            # If firebase_config is defined, use it
+            firebase_cred = credentials.Certificate(json.loads(firebase_config))
+        else:
+            # If firebase_config is not defined, check for firebase_config_path
+            firebase_config_path = os.environ.get('FIREBASE_CONFIG_PATH')
+            if firebase_config_path:
+                # If firebase_config_path is defined, load the config from a json file
+                with open(firebase_config_path) as json_file:
+                    firebase_cred = credentials.Certificate(json.load(json_file))
+            else:
+                # If neither firebase_config nor firebase_config_path is defined, print an error
+                raise Exception("Neither FIREBASE_CONFIG nor FIREBASE_CONFIG_PATH is defined in the environment variables.")
+
         if not firebase_admin._apps:
             firebase_admin.initialize_app(firebase_cred)
         global db
         db = firestore.client()
     except Exception as e:
-        print(f"Error initializing Firebase: {e}")
+        print(f"error initializing Firebase: {e}")
         exit(1)
 
-def resolve_sigs(bytecode):
+
+def resolve_sigs(bytecode) -> list:
     ops = []
 
     # basic parsing of evm bytecode
@@ -65,7 +78,7 @@ def resolve_sigs(bytecode):
                 continue
             signatures.append((binascii.hexlify(selector).decode(), name))
         except Exception as e:
-            print(f"Error processing selector: {e}")
+            print(f"error processing selector: {e}")
             continue
 
     return signatures
@@ -79,7 +92,7 @@ def resolve_sig(bin_sig):
         print(f"Signature for selector {binascii.hexlify(bin_sig).decode()} not found in Firestore.")
         return "Not found", None
     except Exception as e:
-        print(f"Error querying Firestore: {e}")
+        print(f"error querying Firestore: {e}")
         return None, e
 
 # get the function signatures of a contract
@@ -88,7 +101,7 @@ def get_signatures(bytecode):
     try:
         bytecode = bytes.fromhex(bytecode)
     except Exception as e:
-        print(f"Error processing bytecode: {e}")
+        print(f"error processing bytecode: {e}")
         exit(1)
 
     return resolve_sigs(bytecode)
