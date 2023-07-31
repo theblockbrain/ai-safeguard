@@ -59,6 +59,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 # Authors
 
 - **[Nader Bennour](https://linkedin.com/in/naderfyi)** - *Initial work*
+- **[Blockbrain](https://www.linkedin.com/company/theblockbrain/)** - *support, maintenance, refinement, development*
 
 ## Note
 
