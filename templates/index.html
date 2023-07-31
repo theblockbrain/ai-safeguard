@@ -111,14 +111,14 @@
             </div>
             <div class="w-full p-4 border border-slate-200 dark:border-slate-700 rounded-xl relative">
                <small class="absolute top-0 h-6 px-2 bg-white dark:bg-slate-900 -mt-3 flex items-center">Actions</small>
-               <div class="w-full flex items-center gap-3 justify-center">
+               <div class="w-full flex items-center gap-2 justify-center">
                   <button type="submit" value="Bytecode" formaction="/scrape_bytecode" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Bytecode</button>
                   <button type="submit" value="Cfg" formaction="/generate_cfg" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Cfg</button>
                   <button type="submit" value="Disassembly" formaction="/disasm" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Disassembly</button>
                   <button type="submit" value="Signatures" formaction="/get_signatures" class="text-sm flex-1 px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out">Signatures</button>
                </div>
                <div class="w-full mt-2 flex items-center gap-3 justify-center">
-                  <button type="submit" value="Audit" formaction="/audit_contract" class="w-full text-xl px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-colors ease-in-out flex items-center gap-2 justify-center">             
+                  <button type="submit" value="Audit" formaction="/audit_contract" class="w-full shadow-none hover:shadow-xl hover:shadow-green-300/50 text-xl px-4 py-2 bg-green-300 text-green-700 rounded-lg hover:bg-green-400 transition-all ease-in-out flex items-center gap-2 justify-center">             
                     Audit
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
